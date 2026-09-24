@@ -30,6 +30,8 @@ If you can connect to the router via Wi-Fi/SSH but scripts fail to run, run thes
   ```bash
   opkg list-installed | grep -E "python3-light|python3-smbus|i2c-tools"
   ```
+  - [ ] **Non-Interactive Scheduling:** Confirm that your cron additions were applied using an automated string rather than an interactive utility. If the shell layout breaks line alignment during configuration updates, immediately drop the session fix: `reset` or `stty sane`, then verify the files via `cat /etc/crontabs/root`.
+
 - [ ] **Cron Scheduler Running:** Ensure the background daemon is actively checking the battery status every 5 or 10 minutes:
   ```bash
   /etc/init.d/cron status

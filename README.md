@@ -22,6 +22,16 @@ A foolproof method for headless OpenWrt setup using a Windows machine and DiskIn
 
 ---
 
+### 📦 Modular Package Deployment Matrix
+
+| Project Phase | Deployment Method | Required Packages | Purpose / Functionality |
+| :--- | :--- | :--- | :--- |
+| **🟢 Core Baseline** *(Vanilla Image)* | **Pre-compiled** via Firmware Selector | `kmod-mt7921u`, `kmod-mt7921-firmware`, `nano`, `luci-app-ttyd`, `luci-app-advanced-reboot`, `iwinfo`, `base-files` | Handles first-boot auto-shutdown, restores offline AP wireless matrix, provides web console (`ttyd`), dual-boot recovery, and safe terminal editing out of the box. |
+| **🔵 Secure Tunnel** *(Optional Expansion)* | **On-Demand** via LuCI Software / CLI | `tailscale`, `kmod-tun`, `iptables-nft`, `luci-app-commands` | Establishes on-demand VPN routing through a home exit node via single-click dashboard buttons. |
+| **🟡 Battery Protection** *(Optional Protection)* | **On-Demand** via LuCI Software / CLI | `kmod-i2c-bcm2835`, `i2c-tools`, `python3-light`, `python3-smbus` | Communicates with the hardware `INA219` battery chip over the I2C serial bus for automated graceful shutdowns. |
+
+---
+
 ## 📝 Credits & References
 
 * **Mediatek Wi-Fi USB Driver Configuration:** Shoutout to monotux.tech for documenting the necessary kernel modules (`kmod-mt7921u` & firmware blobs) required to get these cheap Wi-Fi 6 adapters working smoothly on OpenWrt setups. 
@@ -40,6 +50,17 @@ This document outlines a foolproof, offline methodology to safely complete the i
     *   A clean text editor (e.g., Notepad++ or VS Code).
 
 ---
+### 💿 The Vanilla Base Image Recipe
+
+To ensure completely offline, headless operations right from the very first boot, the baseline OpenWrt image is custom-compiled using the **OpenWrt Firmware Selector** (Attended Sysupgrade). This bakes the MediaTek Wi-Fi 6 USB drivers, native web-integrated consoles, partition recovery blocks, and system defaults directly into the initial flash payload.
+
+When building your custom image, copy and paste this exact string directly into the **"Installed Packages"** array box:
+
+```text
+base-files bcm27xx-gpu-fw bcm27xx-utils ca-bundle dnsmasq dropbear e2fsprogs firewall4 fstools kmod-fs-vfat kmod-nft-offload kmod-nls-cp437 kmod-nls-iso8859-1 kmod-sound-arm-bcm2835 kmod-sound-core kmod-usb-hid libc libgcc libustream-mbedtls logd mkf2fs mtd netifd nftables odhcp6c odhcpd-ipv6only opkg partx-utils ppp ppp-mod-pppoe procd-ujail uci uclient-fetch urandom-seed cypress-firmware-43430-sdio brcmfmac-nvram-43430-sdio cypress-firmware-43455-sdio brcmfmac-nvram-43455-sdio kmod-brcmfmac wpad-basic-mbedtls kmod-i2c-bcm2835 kmod-spi-bcm2835 kmod-spi-bcm2835-aux iwinfo luci luci-app-attendedsysupgrade kmod-mt7921-firmware kmod-mt7921u luci-app-ttyd luci-app-advanced-reboot nano
+```
+
+*Note: `nano` has been appended to the end of the original package string to guarantee a friendly text editor is baked straight into the firmware compile, entirely avoiding the need for interactive shell editors down the line.*
 
 ### 🕹️ Step 1: The First-Boot "Clean Shutdown" Logic
 The foundational breakthrough of this method relies on forcing the operating system to autonomously perform a clean power execution *only after* it completes its structural first-boot configuration (partition expansion, populating configuration templates, and creating SSH key pairs).

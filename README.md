@@ -188,15 +188,7 @@ config interface 'wwan'
 
 The Pi will immediately bridge the traffic routing lanes, creating full internet passthrough.
 
-### 📦 2. Install Python, I2C Modules, and Friendly Text Editor
-To ensure stable terminal operations and completely avoid legacy interface lockups over web console environments, install the lightweight Python framework alongside the `nano` text editor in a single routine:
-
-```bash
-opkg update
-opkg install kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus nano
-```
-
-#### 🛡️ Global Environment Alignment
+#### 🛡️ Step 5: Global Environment Alignment
 Force OpenWrt to permanently use `nano` as the global system default text editor for all administration tasks moving forward:
 
 ```bash
@@ -205,13 +197,6 @@ source /etc/profile
 ```
 
 
-### 🔄 Optional: On-Demand Tailscale Exit Node Toggle
-To route AP clients through a remote home exit node on-demand:
-1. Install `tailscale`, `kmod-tun`, and `luci-app-commands`.
-2. Map the `tailscale0` unmanaged interface into the `wan` firewall zone.
-3. Use LuCI's Custom Commands (`System ➔ Custom Commands`) to bind `tailscale up --exit-node=XX` and `tailscale down` to dashboard execution keys.
-
----
 
 # Raspberry Pi Zero 2 W Travel Router with Tailscale & OpenWrt
 
@@ -290,7 +275,8 @@ For OpenWrt to forward your local wireless devices (`172.18.4.x`) into the Tails
 4. Go to the newly created interface's **Firewall Settings** tab, and assign it to the **`wan` zone** alongside your USB client interface.
 5. Click **Save**, and then click **Save & Apply**.
 
-## 🔋 Step 5: Hardware Protection via Waveshare 18650 UPS HAT
+
+# 🔋 Hardware Protection via Waveshare 18650 UPS HAT
 
 To prevent storage and configuration file corruption on the road, a lightweight background monitor runs via OpenWrt's native scheduler (`cron`). This monitors the dual 18650 series cells via the onboard `INA219` sensor chip at I2C address `0x42` and triggers a clean system shutdown before the battery dies.
 
@@ -298,7 +284,7 @@ To prevent storage and configuration file corruption on the road, a lightweight 
 OpenWrt does not enable the Broadcom serial buses by default. Edit the primary boot configuration file:
 
 ```bash
-vi /boot/config.txt
+nano /boot/config.txt
 ```
 
 Append the following hardware overlay parameters to the bottom of the file:
@@ -317,7 +303,7 @@ To keep the RAM footprint minimal on the Pi's 512MB stack, install the stripped-
 opkg update
 opkg install kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus
 ```
-
+---
 Verify that the kernel successfully maps the Waveshare hardware chip by scanning the active bus:
 
 ```bash
@@ -338,7 +324,7 @@ i2cdetect -y 1
 Create a tiny monitoring executable asset at `/etc/ups_monitor.py`:
 
 ```bash
-vi /etc/ups_monitor.py
+nano /etc/ups_monitor.py
 ```
 
 Paste the following logic, specifically calibrated for the dual 18650 series cell pack configurations (8.4V full load / 6.4V cut-off boundary):
@@ -382,18 +368,9 @@ chmod +x /etc/ups_monitor.py
 
 ### ⏱️ 4. Automate the Scan via Cron Tasks
 Instead of running a persistent background engine thread that consumes memory, delegate execution to the native lightweight cron scheduler to check the status once every minute or longer.
-
+From the Terminal...
 ```bash
-crontab -e
-```
-
-Add the following command rule:
-```text
-* * * * * /usr/bin/python3 /etc/ups_monitor.py
-or
-*/5 * * * * /usr/bin/python3 /etc/ups_monitor.py
-or
-*/10 * * * * /usr/bin/python3 /etc/ups_monitor.py
+echo "*/5 * * * * /usr/bin/python3 /etc/ups_monitor.py" >> /etc/crontabs/root
 ```
 
 Restart the background scheduler engine to apply:
@@ -403,9 +380,6 @@ Restart the background scheduler engine to apply:
 ***
 
 ### ⚠️ A Small Code Adjustment Notice for your File:
-I adjusted a tiny detail in the Python line parsing data from the chip inside this Markdown text block: 
-`raw_val = (read_data[0] << 8) | read_data[1]`
-
 The `smbus.read_i2c_block_data` tool pulls data as a structured list of bytes (`[byte1, byte2]`), so wrapping it with index tags like `[0]` and `[1]` ensures that the Python engine can shift the bits correctly without throwing a type error!
 
 ### 📊 5. Optional: LuCI Visual Battery Dashboard Status Check
@@ -417,7 +391,12 @@ To view real-time battery voltage and estimated capacities directly from the LuC
    * **Command:** `/etc/ups_status.py`
 
 When triggered, it parses the binary register values and delivers a clean status window directly within the web dashboard.
-ups_status.py
+Create a tiny executable asset at `/etc/ups_status.py`:
+
+```bash
+nano /etc/ups_status.py
+```
+
 ```python
 #!/usr/bin/env python3
 import smbus
@@ -481,7 +460,7 @@ This creates a new **"Travel Tools"** main category with two dedicated sub-panel
 Create the structural configuration JSON schema layout file on the filesystem:
 
 ```bash
-vi /usr/share/luci/menu.d/luci-app-travel-tools.json
+nano /usr/share/luci/menu.d/luci-app-travel-tools.json
 ```
 
 Paste the following mapping coordinates inside the file:

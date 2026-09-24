@@ -355,8 +355,64 @@ I adjusted a tiny detail in the Python line parsing data from the chip inside th
 
 The `smbus.read_i2c_block_data` tool pulls data as a structured list of bytes (`[byte1, byte2]`), so wrapping it with index tags like `[0]` and `[1]` ensures that the Python engine can shift the bits correctly without throwing a type error!
 
-<FollowUp>
-Would you like me to generate a companion **LuCI Custom Command script snippet** that you can add as a button to instantly view the active **real-time voltage** of your 18650 cells right in the browser? 
-</FollowUp>
+### 📊 5. Optional: LuCI Visual Battery Dashboard Status Check
+To view real-time battery voltage and estimated capacities directly from the LuCI web panel without terminal use:
+
+1. Build an execution script at `/etc/ups_status.py` with executable permissions (`chmod +x`).
+2. Map the script inside the web framework: **System ➔ Custom Commands ➔ Add**:
+   * **Description:** Check UPS Battery Status
+   * **Command:** `/etc/ups_status.py`
+
+When triggered, it parses the binary register values and delivers a clean status window directly within the web dashboard.
+ups_status.py
+```#!/usr/bin/env python3
+import smbus
+import sys
+
+I2C_BUS = 1
+UPS_ADDRESS = 0x42
+REG_BUS_VOLTAGE = 0x02
+
+def get_pack_data():
+    try:
+        bus = smbus.SMBus(I2C_BUS)
+        read_data = bus.read_i2c_block_data(UPS_ADDRESS, REG_BUS_VOLTAGE, 2)
+        raw_val = (read_data[0] << 8) | read_data[1]
+        voltage = (raw_val >> 3) * 0.004
+        
+        # Calculate percentage based on 6.0V (empty) to 8.4V (full) range
+        percentage = ((voltage - 6.0) / (8.4 - 6.0)) * 100
+        if percentage > 100: percentage = 100.0
+        if percentage < 0: percentage = 0.0
+        
+        return voltage, percentage
+    except Exception:
+        return None, None
+
+v, p = get_pack_data()
+
+if v is not None:
+    print("========================================")
+    print(f"       WAVESHARE 18650 UPS STATUS      ")
+    print("========================================")
+    print(f" Pack Voltage : {v:.2f} V  (Approx {v/2:.2f}V per cell)")
+    print(f" Charge Level : {p:.1f} %")
+    print("----------------------------------------")
+    if v <= 6.4:
+        print(" STATUS       : CRITICAL! Charge immediately.")
+    elif v <= 7.2:
+        print(" STATUS       : Low Battery")
+    else:
+        print(" STATUS       : Healthy / Operational")
+    print("========================================")
+else:
+    print("Error: Could not communicate with UPS via I2C bus.")
+    sys.exit(1)
+```
+
+Make the script executable:
+```bash
+chmod +x /etc/ups_status.py
+```
 
 * **Documentation Formatting:** Structured into GitHub README format with the help of an AI assistant.

@@ -167,6 +167,23 @@ config interface 'wwan'
 
 The Pi will immediately bridge the traffic routing lanes, creating full internet passthrough.
 
+### 📦 2. Install Python, I2C Modules, and Friendly Text Editor
+To ensure stable terminal operations and completely avoid legacy interface lockups over web console environments, install the lightweight Python framework alongside the `nano` text editor in a single routine:
+
+```bash
+opkg update
+opkg install kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus nano
+```
+
+#### 🛡️ Global Environment Alignment
+Force OpenWrt to permanently use `nano` as the global system default text editor for all administration tasks moving forward:
+
+```bash
+echo "export EDITOR=nano" >> /etc/profile
+source /etc/profile
+```
+
+
 ### 🔄 Optional: On-Demand Tailscale Exit Node Toggle
 To route AP clients through a remote home exit node on-demand:
 1. Install `tailscale`, `kmod-tun`, and `luci-app-commands`.

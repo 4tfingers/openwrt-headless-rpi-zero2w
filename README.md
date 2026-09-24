@@ -425,4 +425,149 @@ Make the script executable:
 chmod +x /etc/ups_status.py
 ```
 
+
+
+## 🚀 Bonus Extension: Creating a Custom LuCI Sidebar Menu ("Travel Tools")
+
+If you want to move beyond basic Custom Commands and give your headless travel router a highly polished, integrated interface look, you can map your custom scripts directly into LuCI's primary left-hand navigation sidebar. 
+
+This creates a new **"Travel Tools"** main category with two dedicated sub-panels: **"Toggle Tailscale"** and **"UPS Battery Status"**.
+
+### 📁 1. Define the Menu Framework Structure
+Create the structural configuration JSON schema layout file on the filesystem:
+
+```bash
+vi /usr/share/luci/menu.d/luci-app-travel-tools.json
+```
+
+Paste the following mapping coordinates inside the file:
+
+```json
+{
+	"admin/travel_tools": {
+		"title": "Travel Tools",
+		"order": 60,
+		"action": {
+			"type": "firstchild"
+		}
+	},
+	"admin/travel_tools/tailscale": {
+		"title": "Toggle Tailscale",
+		"order": 1,
+		"action": {
+			"type": "view",
+			"path": "travel_tools/tailscale_view"
+		}
+	},
+	"admin/travel_tools/ups": {
+		"title": "UPS Battery Status",
+		"order": 2,
+		"action": {
+			"type": "view",
+			"path": "travel_tools/ups_view"
+		}
+	}
+}
+```
+
+### 🎛️ 2. Inject the Interactive Dashboard Views
+Create a dedicated template folder structure, then build the two rendering scripts:
+
+```bash
+mkdir -p /usr/share/luci/view/travel_tools
+```
+
+#### A. Tailscale Action Controller Panel
+Create the view interface engine at `/usr/share/luci/view/travel_tools/tailscale_view.js`:
+
+```javascript
+'use strict';
+'use ui';
+
+return L.view.extend({
+    executeScript: function() {
+        return L.resolveDefault(fs.exec('/etc/toggle_tailscale.sh'), {}).then(function(res) {
+            var output = document.getElementById('script-output');
+            if (res.stdout) {
+                output.textContent = res.stdout;
+            } else if (res.stderr) {
+                output.textContent = "Error:\n" + res.stderr;
+            } else {
+                output.textContent = "Command executed successfully with no text return.";
+            }
+        });
+    },
+
+    render: function() {
+        var body = E('div', { 'class': 'cbi-map' }, [
+            E('h2', {}, _('Tailscale Connection Engine')),
+            E('div', { 'class': 'cbi-map-descr' }, _('Click the action button below to connect or disconnect your travel router from the secure tailnet.')),
+            E('div', { 'class': 'cbi-section' }, [
+                E('div', { 'class': 'cbi-section-descr' }, [
+                    E('button', {
+                        'class': 'btn cbi-button cbi-button-action important',
+                        'click': ui.createHandler(this, 'executeScript')
+                    }, _('Run Tailscale Toggle Switch'))
+                ]),
+                E('pre', {
+                    'id': 'script-output',
+                    'style': 'background:#1e1e1e; color:#fff; padding:15px; border-radius:4px; font-family:monospace; white-space:pre-wrap; margin-top:15px;'
+                }, _('System status idle. Click the button above to run the toggle sequence...'))
+            ])
+        ]);
+
+        return body;
+    }
+});
+```
+
+#### B. Real-Time UPS Telemetry Screen
+Create the telemetry monitor view at `/usr/share/luci/view/travel_tools/ups_view.js`:
+
+```javascript
+'use strict';
+'use ui';
+
+return L.view.extend({
+    load: function() {
+        return L.resolveDefault(fs.exec('/etc/ups_status.py'), {});
+    },
+
+    render: function(res) {
+        var outputText = _('Error: Battery tracking execution failed.');
+        if (res && res.stdout) {
+            outputText = res.stdout;
+        }
+
+        var body = E('div', { 'class': 'cbi-map' }, [
+            E('h2', {}, _('Hardware Energy Status Matrix')),
+            E('div', { 'class': 'cbi-map-descr' }, _('Real-time bus diagnostic data pulled straight from the physical Waveshare 18650 I2C registers.')),
+            E('div', { 'class': 'cbi-section' }, [
+                E('pre', {
+                    'style': 'background:#1e1e1e; color:#00ff00; padding:20px; border-radius:4px; font-family:monospace; white-space:pre-wrap; font-size:1.1em; line-height:1.4;'
+                }, outputText),
+                E('div', { 'class': 'cbi-section-descr', 'style': 'margin-top:10px;' }, [
+                    E('button', {
+                        'class': 'btn cbi-button cbi-button-neutral',
+                        'click': function() { location.reload(); }
+                    }, _('Refresh Battery Metrics'))
+                ])
+            ])
+        ]);
+
+        return body;
+    }
+});
+```
+
+### ⚡ 3. Apply the Blueprint Expansion Layout
+Flush the active structural UI index mapping caches via SSH so the web server can pick up your new files immediately:
+
+```bash
+rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
+```
+
+*Refresh your web browser to reveal your new customized travel dashboard control cluster seamlessly loaded into the primary navigation menu.*
+
+
 * **Documentation Formatting:** Structured into GitHub README format with the help of an AI assistant.

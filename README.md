@@ -281,6 +281,15 @@ i2cdetect -y 1
 ```
 *(You should see hexadecimal address `42` illuminate within the `40:` row grid layout).*
 
+```text
+     0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+00:          -- -- -- -- -- -- -- -- -- -- -- -- -- 
+10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+40: -- -- 42 -- -- -- -- -- -- -- -- -- -- -- -- -- 
+```
+
 ### 📜 3. Inject the Core UPS Guard Script
 Create a tiny monitoring executable asset at `/etc/ups_monitor.py`:
 

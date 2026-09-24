@@ -16,6 +16,10 @@ A foolproof method for headless OpenWrt setup using a Windows machine and DiskIn
 
 ---
 
+## 📝 Credits & References
+
+* **Mediatek Wi-Fi USB Driver Configuration:** Shoutout to monotux.tech for documenting the necessary kernel modules (`kmod-mt7921u` & firmware blobs) required to get these cheap Wi-Fi 6 adapters working smoothly on OpenWrt setups. 
+
 ### 📋 Overview & Challenge
 Provisioning a headless **Raspberry Pi Zero 2 W** with **OpenWrt** presents a classic "chicken-and-egg" dilemma: the device has no Ethernet port, and OpenWrt boots with Wi-Fi disabled by default. If the power plug is pulled aggressively during the initial boot sequence to access the storage media, the `ext4` root filesystem faces a severe risk of data corruption. 
 
@@ -242,3 +246,4 @@ For OpenWrt to forward your local wireless devices (`172.18.4.x`) into the Tails
 4. Go to the newly created interface's **Firewall Settings** tab, and assign it to the **`wan` zone** alongside your USB client interface.
 5. Click **Save**, and then click **Save & Apply**.
 
+* **Documentation Formatting:** Structured into GitHub README format with the help of an AI assistant.

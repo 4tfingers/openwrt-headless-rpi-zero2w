@@ -365,7 +365,8 @@ To view real-time battery voltage and estimated capacities directly from the LuC
 
 When triggered, it parses the binary register values and delivers a clean status window directly within the web dashboard.
 ups_status.py
-```#!/usr/bin/env python3
+```python
+#!/usr/bin/env python3
 import smbus
 import sys
 

@@ -2,6 +2,20 @@
 A foolproof method for headless OpenWrt setup using a Windows machine and DiskInternals Linux Writer
 # Technical Documentation: Headless Provisioning of Raspberry Pi Zero 2 W (Dual Wi-Fi Setup via Windows Architecture)
 
+---
+
+## 🔌 Hardware Requirements
+
+| Component | Purpose | Notes |
+| :--- | :--- | :--- |
+| **Raspberry Pi Zero 2 W** | The core router hardware. | Low-power, ultra-portable computer running OpenWrt. |
+| **MicroSD Card (8GB+)** | Storage for the OS and packages. | High-quality card (Class 10/U1) recommended for reliability. |
+| **USB Wi-Fi/Ethernet Card** | Secondary network interface. | Required to handle the WAN internet connection while the Pi's built-in Wi-Fi hosts the local AP. |
+| **OTG Micro-USB Cable/Hub** | Connectivity. | Converts the Pi's Micro-USB port to standard USB-A for your network card. |
+| **Reliable Power Supply** | Power source. | 5V 2.5A Micro-USB adapter or a stable power bank for travel use. |
+
+---
+
 ### 📋 Overview & Challenge
 Provisioning a headless **Raspberry Pi Zero 2 W** with **OpenWrt** presents a classic "chicken-and-egg" dilemma: the device has no Ethernet port, and OpenWrt boots with Wi-Fi disabled by default. If the power plug is pulled aggressively during the initial boot sequence to access the storage media, the `ext4` root filesystem faces a severe risk of data corruption. 
 
@@ -142,3 +156,89 @@ config interface 'wwan'
 5. Navigate to **Network ➔ Interfaces ➔ WWAN (Edit) ➔ Firewall Settings** and place the interface into the **`wan`** zone. Save and apply all pending structural changes. 
 
 The Pi will immediately bridge the traffic routing lanes, creating full internet passthrough.
+
+### 🔄 Optional: On-Demand Tailscale Exit Node Toggle
+To route AP clients through a remote home exit node on-demand:
+1. Install `tailscale`, `kmod-tun`, and `luci-app-commands`.
+2. Map the `tailscale0` unmanaged interface into the `wan` firewall zone.
+3. Use LuCI's Custom Commands (`System ➔ Custom Commands`) to bind `tailscale up --exit-node=XX` and `tailscale down` to dashboard execution keys.
+
+---
+
+# Raspberry Pi Zero 2 W Travel Router with Tailscale & OpenWrt
+
+This guide explains how to convert a Raspberry Pi Zero 2 W into a secure travel router. By routing all client traffic through a home exit node, connected devices (like a Surface Pro X) can browse securely from public Wi-Fi while appearing to be on your home network.
+
+Because the Pi Zero 2 W has limited CPU power, running Tailscale permanently will drain resources and slow down the local network. Leaving it off by default also lets you share the base OpenWrt Access Point details with others without exposing private home network routes. 
+
+To solve this, we configure an on/off toggle switch using a custom menu action button inside the LuCI web interface.
+
+---
+
+## 🛠️ Step 1: Install the Packages
+
+Once your Pi is connected to the internet via the USB card, go to **System** ➔ **Software** in LuCI (or log in via SSH) and install these four essential components:
+
+* `tailscale` – The core VPN daemon.
+* `kmod-tun` – The Linux virtual network driver required by Tailscale.
+* `iptables-nft` – Ensures OpenWrt handles Tailscale's firewall rules properly.
+* `luci-app-commands` – Adds a custom menu to LuCI to build web buttons.
+
+---
+
+## 🔗 Step 2: Establish the Home Link (One-Time Setup)
+
+Run this command once via SSH to link your OpenWrt device to your Tailscale account. 
+
+> [!NOTE]  
+> If you are concerned about being locked out of the internet when the tunnel becomes active, you can perform this step **after** completing the Firewall Bridge step (Step 4).
+
+Replace `YOUR-HOME-EXIT-NODE-IP` with your home machine's `100.x.x.x` Tailscale IP address.
+
+```bash
+# Start and enable the service
+/etc/init.d/tailscale start
+/etc/init.d/tailscale enable
+
+# Authenticate and map to your exit node
+tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true
+```
+
+1. Follow the authentication link printed on the screen to approve the router in your browser. 
+2. Once authenticated, run the following command to turn it off immediately:
+   ```bash
+   tailscale down
+   ```
+
+---
+
+## 🎛️ Step 3: Create the On/Off Switch in LuCI
+
+Rather than opening a terminal whenever you want to toggle the VPN, you can create a point-and-click dashboard directly inside the web interface using **Custom Commands**.
+
+1. In the LuCI menu, navigate to **System** ➔ **Custom Commands**.
+2. Click **Add** to create the "VPN On" button:
+   * **Description:** `Start Tailscale Home Tunnel`
+   * **Command:** `tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true`
+3. Click **Add** again to create the "VPN Off" button:
+   * **Description:** `Stop Tailscale Tunnel`
+   * **Command:** `tailscale down`
+4. Click **Save & Apply**.
+
+Now, when you visit **System** ➔ **Custom Commands**, your two actions will be neatly presented. Clicking **Run** next to *Start Tailscale* will instantly drop all connected Wi-Fi devices into the secure encrypted tunnel. Clicking *Stop Tailscale* drops the connection instantly, returning the AP to standard local routing.
+
+---
+
+## 🧱 Step 4: The Firewall Bridge
+
+For OpenWrt to forward your local wireless devices (`172.18.4.x`) into the Tailscale connection when it is active, the firewall needs an interface definition.
+
+1. Go to **Network** ➔ **Interfaces** and click **Add new interface...**
+2. Configure the following fields:
+   * **Name:** `tailscale`
+   * **Protocol:** `Unmanaged`
+   * **Device:** `tailscale0`
+3. Click **Create Interface**.
+4. Go to the newly created interface's **Firewall Settings** tab, and assign it to the **`wan` zone** alongside your USB client interface.
+5. Click **Save**, and then click **Save & Apply**.
+

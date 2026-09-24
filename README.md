@@ -17,8 +17,9 @@
 | **Raspberry Pi Zero 2 W** | The core router hardware. | Low-power, ultra-portable computer running OpenWrt. |
 | **MicroSD Card (8GB+)** | Storage for the OS and packages. | High-quality card (Class 10/U1) recommended for reliability. |
 | **USB Wi-Fi Adaptor** | Secondary network interface. | Required to handle the WAN internet connection while the Pi's built-in Wi-Fi hosts the local AP.  I used a EDUP 3000Mbps WiFi 6E Wireless Network Card USB|
-| **OTG Micro-USB Cable/Hub** | Connectivity. | Converts the Pi's Micro-USB port to standard USB-A for your network card. |
-| **Reliable Power Supply** | Power source. | 5V 2.5A Micro-USB adapter or a stable power bank for travel use. |
+| **Windows or Linux PC** | Connectivity and Editing ext4 partitions. | Required to be able to edit the SDCard Files. |
+| **A micro-usb to usb-A Adaptor** |To plug the Adaptor into the Rpi 2W. | Required to do anything, i used a Zero2 to 3B+ shield for easy adaption. |
+| **Reliable Power Supply** | Power source. | 5V 2.5A Micro-USB adapter or a stable power bank for travel use. I use a WaveShare UPS with dual 18650 batteries. |
 
 ---
 

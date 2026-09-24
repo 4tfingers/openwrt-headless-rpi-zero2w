@@ -328,7 +328,7 @@ chmod +x /etc/ups_monitor.py
 ```
 
 ### ⏱️ 4. Automate the Scan via Cron Tasks
-Instead of running a persistent background engine thread that consumes memory, delegate execution to the native lightweight cron scheduler to check the status once every minute.
+Instead of running a persistent background engine thread that consumes memory, delegate execution to the native lightweight cron scheduler to check the status once every minute or longer.
 
 ```bash
 crontab -e
@@ -337,6 +337,10 @@ crontab -e
 Add the following command rule:
 ```text
 * * * * * /usr/bin/python3 /etc/ups_monitor.py
+or
+*/5 * * * * /usr/bin/python3 /etc/ups_monitor.py
+or
+*/10 * * * * /usr/bin/python3 /etc/ups_monitor.py
 ```
 
 Restart the background scheduler engine to apply:

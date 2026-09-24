@@ -3,10 +3,10 @@
 > 🚨 **[EMERGENCY TROUBLESHOOTING CHECKLIST](CHECKLIST.md)** 🚨
 >
 > A production-grade manual for deploying a resilient, headless Pi Zero 2 W travel router on the road without an initial internet uplink.
+>
 
-# openwrt-headless-rpi-zero2w
-A foolproof method for headless OpenWrt setup using a Windows machine and DiskInternals Linux Writer
 # Technical Documentation: Headless Provisioning of Raspberry Pi Zero 2 W (Dual Wi-Fi Setup via Windows Architecture)
+> A foolproof method for headless OpenWrt setup using a Windows machine and DiskInternals Linux Writer
 
 ---
 
@@ -31,10 +31,6 @@ A foolproof method for headless OpenWrt setup using a Windows machine and DiskIn
 | **🟡 Battery Protection** *(Optional Protection)* | **On-Demand** via LuCI Software / CLI | `kmod-i2c-bcm2835`, `i2c-tools`, `python3-light`, `python3-smbus` | Communicates with the hardware `INA219` battery chip over the I2C serial bus for automated graceful shutdowns. |
 
 ---
-
-## 📝 Credits & References
-
-* **Mediatek Wi-Fi USB Driver Configuration:** Shoutout to monotux.tech for documenting the necessary kernel modules (`kmod-mt7921u` & firmware blobs) required to get these cheap Wi-Fi 6 adapters working smoothly on OpenWrt setups. 
 
 ### 📋 Overview & Challenge
 Provisioning a headless **Raspberry Pi Zero 2 W** with **OpenWrt** presents a classic "chicken-and-egg" dilemma: the device has no Ethernet port, and OpenWrt boots with Wi-Fi disabled by default. If the power plug is pulled aggressively during the initial boot sequence to access the storage media, the `ext4` root filesystem faces a severe risk of data corruption. 
@@ -448,6 +444,51 @@ Make the script executable:
 chmod +x /etc/ups_status.py
 ```
 
+### 🔄 Staging the Unified Tailscale Toggle Script
+
+Before mapping the interactive sidebar application links, you must deploy the unified toggle engine script onto the Pi's filesystem. This script automatically checks if the VPN daemon is active, tears down routing tables on disconnection, or brings up the interface using your custom exit node configurations seamlessly.
+
+1. Connect to your Pi's web console or SSH and create the controller file:
+   ```bash
+   nano /etc/toggle_tailscale.sh
+   ```
+
+2. Paste the following unified execution code into the file:
+   ```bash
+   #!/bin/sh
+
+   # Check if the Tailscale daemon is currently running
+   if pgrep tailscaled > /dev/null; then
+       echo "Tailscale is active. Disconnecting from tailnet..."
+       /usr/sbin/tailscale down 2>/dev/null
+       
+       echo "Stopping Tailscale daemon..."
+       /etc/init.d/tailscale stop >/dev/null 2>&1
+       echo "Tailscale has been cleanly stopped."
+   else
+       echo "Tailscale is offline. Starting daemon..."
+       /etc/init.d/tailscale start >/dev/null 2>&1
+       
+       echo "Waiting 3 seconds for daemon initialization..."
+       sleep 3
+       
+       echo "Bringing Tailscale interface up with custom routing..."
+       # Run the up command and mute the background Go log runtime clutter
+       /usr/sbin/tailscale up --accept-dns=false --exit-node=100.111.96.59 --exit-node-allow-lan-access=true 2>/dev/null
+       
+       echo "Tailscale is now up and running successfully."
+       
+       echo "----------------------------------------"
+       echo "Current Tailscale IP:"
+       /usr/sbin/tailscale ip -4
+       echo "----------------------------------------"
+   fi
+   ```
+
+3. Save the file and grant it explicit execution permissions:
+   ```bash
+   chmod +x /etc/toggle_tailscale.sh
+   ```
 
 
 ## 🚀 Bonus Extension: Creating a Custom LuCI Sidebar Menu ("Travel Tools")
@@ -593,4 +634,8 @@ rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
 *Refresh your web browser to reveal your new customized travel dashboard control cluster seamlessly loaded into the primary navigation menu.*
 
 
-* **Documentation Formatting:** Structured into GitHub README format with the help of an AI assistant.
+## 🤝 Acknowledgements
+
+- **Mediatek Wi-Fi USB Driver Configuration:** Shoutout to monotux.tech for documenting the necessary kernel modules (`kmod-mt7921u` & firmware blobs) required to get these Wi-Fi 6 adapters working smoothly on OpenWrt setups.
+- **Architectural & AI Collaboration:** Structured, optimized, and debugged in collaboration with Google's AI assistant framework to ensure robust, non-interactive script operations and fail-safe terminal tracking protocols.
+

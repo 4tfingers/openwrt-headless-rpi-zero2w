@@ -1,3 +1,9 @@
+# 🎒 OpenWrt Headless Travel Router Blueprint
+
+[![Troubleshooting Checklist](https://shields.io)](CHECKLIST.md)
+
+> A production-grade manual for deploying a resilient, headless Pi Zero 2 W travel router on the road without an initial internet uplink.
+
 # openwrt-headless-rpi-zero2w
 A foolproof method for headless OpenWrt setup using a Windows machine and DiskInternals Linux Writer
 # Technical Documentation: Headless Provisioning of Raspberry Pi Zero 2 W (Dual Wi-Fi Setup via Windows Architecture)

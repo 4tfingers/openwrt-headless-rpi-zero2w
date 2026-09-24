@@ -1,7 +1,7 @@
 # 🎒 OpenWrt Headless Travel Router Blueprint
 
 [![Troubleshooting Checklist](https://shields.io)](CHECKLIST.md)
-
+[![Emergency Troubleshooting Checklist](https://shields.io)](CHECKLIST.md)
 > A production-grade manual for deploying a resilient, headless Pi Zero 2 W travel router on the road without an initial internet uplink.
 
 # openwrt-headless-rpi-zero2w

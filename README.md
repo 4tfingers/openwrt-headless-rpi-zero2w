@@ -246,4 +246,113 @@ For OpenWrt to forward your local wireless devices (`172.18.4.x`) into the Tails
 4. Go to the newly created interface's **Firewall Settings** tab, and assign it to the **`wan` zone** alongside your USB client interface.
 5. Click **Save**, and then click **Save & Apply**.
 
+## 🔋 Step 5: Hardware Protection via Waveshare 18650 UPS HAT
+
+To prevent storage and configuration file corruption on the road, a lightweight background monitor runs via OpenWrt's native scheduler (`cron`). This monitors the dual 18650 series cells via the onboard `INA219` sensor chip at I2C address `0x42` and triggers a clean system shutdown before the battery dies.
+
+### 🛠️ 1. Enable Hardware I2C Interface
+OpenWrt does not enable the Broadcom serial buses by default. Edit the primary boot configuration file:
+
+```bash
+vi /boot/config.txt
+```
+
+Append the following hardware overlay parameters to the bottom of the file:
+
+```text
+dtparam=i2c_arm=on
+dtoverlay=i2c-rtc,ds1307
+```
+
+*Save and reboot the system (`reboot`) to load the hardware profile lines.*
+
+### 📦 2. Install Lightweight Python & I2C Modules
+To keep the RAM footprint minimal on the Pi's 512MB stack, install the stripped-down, bare-bones version of Python and its SMBus bindings:
+
+```bash
+opkg update
+opkg install kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus
+```
+
+Verify that the kernel successfully maps the Waveshare hardware chip by scanning the active bus:
+
+```bash
+i2cdetect -y 1
+```
+*(You should see hexadecimal address `42` illuminate within the `40:` row grid layout).*
+
+### 📜 3. Inject the Core UPS Guard Script
+Create a tiny monitoring executable asset at `/etc/ups_monitor.py`:
+
+```bash
+vi /etc/ups_monitor.py
+```
+
+Paste the following logic, specifically calibrated for the dual 18650 series cell pack configurations (8.4V full load / 6.4V cut-off boundary):
+
+```python
+#!/usr/bin/env python3
+import smbus
+import os
+import sys
+
+I2C_BUS = 1
+UPS_ADDRESS = 0x42      
+REG_BUS_VOLTAGE = 0x02  
+
+# Critical Threshold (3.2V per cell minimum backup safety buffer)
+CRITICAL_VOLTAGE = 6.4 
+
+def get_pack_voltage():
+    try:
+        bus = smbus.SMBus(I2C_BUS)
+        read_data = bus.read_i2c_block_data(UPS_ADDRESS, REG_BUS_VOLTAGE, 2)
+        raw_val = (read_data[0] << 8) | read_data[1]
+        voltage = (raw_val >> 3) * 0.004
+        return voltage
+    except Exception:
+        return None
+
+pack_voltage = get_pack_voltage()
+
+if pack_voltage is not None:
+    if pack_voltage <= CRITICAL_VOLTAGE:
+        os.system("logger 'UPS 18650 voltage critically low. Executing clean poweroff.'")
+        os.system("/sbin/poweroff")
+        sys.exit(0)
+```
+
+Make the script executable:
+```bash
+chmod +x /etc/ups_monitor.py
+```
+
+### ⏱️ 4. Automate the Scan via Cron Tasks
+Instead of running a persistent background engine thread that consumes memory, delegate execution to the native lightweight cron scheduler to check the status once every minute.
+
+```bash
+crontab -e
+```
+
+Add the following command rule:
+```text
+* * * * * /usr/bin/python3 /etc/ups_monitor.py
+```
+
+Restart the background scheduler engine to apply:
+```bash
+/etc/init.d/cron restart
+```
+***
+
+### ⚠️ A Small Code Adjustment Notice for your File:
+I adjusted a tiny detail in the Python line parsing data from the chip inside this Markdown text block: 
+`raw_val = (read_data[0] << 8) | read_data[1]`
+
+The `smbus.read_i2c_block_data` tool pulls data as a structured list of bytes (`[byte1, byte2]`), so wrapping it with index tags like `[0]` and `[1]` ensures that the Python engine can shift the bits correctly without throwing a type error!
+
+<FollowUp>
+Would you like me to generate a companion **LuCI Custom Command script snippet** that you can add as a button to instantly view the active **real-time voltage** of your 18650 cells right in the browser? 
+</FollowUp>
+
 * **Documentation Formatting:** Structured into GitHub README format with the help of an AI assistant.

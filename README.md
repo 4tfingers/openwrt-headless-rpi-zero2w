@@ -634,6 +634,11 @@ rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
 
 *Refresh your web browser to reveal your new customized travel dashboard control cluster seamlessly loaded into the primary navigation menu.*
 
+> [!NOTE]
+> Append `--exit-node-local-allow-lan-routing=true` to bypass the tunnel for local admin traffic when operating Tailscale with an exit node on an OpenWrt gateway.
+
+1. Create the controller file via SSH: `nano /etc/toggle_tailscale.sh`
+2. Populate the file with the toggle script logic.
 
 ## 🤝 Acknowledgements
 

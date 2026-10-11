@@ -64,11 +64,3 @@ If Tailscale initializes but traffic fails to route through your exit node:
 
 ---
 
-## 🎨 Phase 5: Custom LuCI UI Refresh
-If the **"Travel Tools"** option is completely missing from the sidebar or displays a 404 error:
-
-- [ ] **Cache Flush Execution:** Run the cache purge string via the command line to force the web interface to recalculate your newly injected JavaScript layout files:
-  ```bash
-  rm -rf /tmp/luci-indexcache /tmp/luci-modulecache
-  ```
-- [ ] **JSON Structural Validity:** Validate that your layout configuration `/usr/share/luci/menu.d/luci-app-travel-tools.json` contains no trailing commas or broken bracket markers.

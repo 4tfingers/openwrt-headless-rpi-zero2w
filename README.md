@@ -376,9 +376,6 @@ Restart the background scheduler engine to apply:
 ```
 ***
 
-### ⚠️ A Small Code Adjustment Notice for your File:
-The `smbus.read_i2c_block_data` tool pulls data as a structured list of bytes (`[byte1, byte2]`), so wrapping it with index tags like `[0]` and `[1]` ensures that the Python engine can shift the bits correctly without throwing a type error!
-
 ### 📊 5. Optional: LuCI Visual Battery Dashboard Status Check
 To view real-time battery voltage and estimated capacities directly from the LuCI web panel without terminal use:
 

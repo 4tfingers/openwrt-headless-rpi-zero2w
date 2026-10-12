@@ -5,7 +5,9 @@ Here is your fully finalized, self-contained production blueprint ready for your
 This document provides the final production blueprint for adding a native Tailscale configuration toggle into the OpenWrt LuCI interface under the Services tab. 
 ### 📋 Production Profile*   **Target OS:** OpenWrt v25.x (Native Client-Side Rendering Framework)*   **Hardware:** Raspberry Pi Zero 2 W
 *   **Access Method:** Windows PowerShell (SSH) & `nano`
----## 🛠️ Production Implementation### Step 1: Create the Production Backend Script*   **File Location:** `/usr/libexec/rpcd/tailscale`
+---## 🛠️ Production Implementation
+
+### Step 1: Create the Production Backend Script*   **File Location:** `/usr/libexec/rpcd/tailscale`
 ```sh
 #!/bin/sh
 
@@ -38,7 +40,8 @@ case "$1" in
         ;;
 esac
 ```
----### Step 2: Create the Production Security Access Rule (ACL)*   **File Location:** `/usr/share/rpcd/acl.d/tailscale.json`
+---
+### Step 2: Create the Production Security Access Rule (ACL)*   **File Location:** `/usr/share/rpcd/acl.d/tailscale.json`
 ```json
 {
 	"luci-app-tailscale": {
@@ -56,7 +59,8 @@ esac
 	}
 }
 ```
----### Step 3: Create the Production Menu Registration*   **File Location:** `/usr/share/luci/menu.d/luci-app-tailscale.json`
+---
+### Step 3: Create the Production Menu Registration*   **File Location:** `/usr/share/luci/menu.d/luci-app-tailscale.json`
 ```json
 {
 	"admin/services/tailscale": {
@@ -72,7 +76,8 @@ esac
 	}
 }
 ```
----### Step 4: Create the Production Frontend User Interface*   **File Location:** `/www/luci-static/resources/view/tailscale/toggle.js`
+---
+### Step 4: Create the Production Frontend User Interface*   **File Location:** `/www/luci-static/resources/view/tailscale/toggle.js`
 ```javascript
 'use strict';
 
@@ -134,7 +139,8 @@ return L.view.extend({
 	handleReset: null
 });
 ```
----### Step 5: Clean Up Test Files & Deploy Production EnvironmentExecute this final command block in your PowerShell SSH terminal to wipe out the previous test version, set the production executable flags, filter potential Windows carriage returns (`\r`), and rebuild the LuCI index.
+---
+### Step 5: Clean Up Test Files & Deploy Production EnvironmentExecute this final command block in your PowerShell SSH terminal to wipe out the previous test version, set the production executable flags, filter potential Windows carriage returns (`\r`), and rebuild the LuCI index.
 ```bash
 # 1. Purge old test files completely
 rm -f /usr/libexec/rpcd/tailscale_test
@@ -155,7 +161,8 @@ sed -i 's\(/\r\)\$//' /www/luci-static/resources/view/tailscale/toggle.js
 /etc/init.d/rpcd restart
 rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/*
 ```
----### Step 6: Session Initialization> [!IMPORTANT]> You must log out of the OpenWrt LuCI web interface entirely and log back in to load the updated ACL permissions into your session token. 
+---
+### Step 6: Session Initialization> [!IMPORTANT]> You must log out of the OpenWrt LuCI web interface entirely and log back in to load the updated ACL permissions into your session token. 
 
 Your fresh, production-ready panel is now waiting for you under **Services -> Tailscale VPN**.
 

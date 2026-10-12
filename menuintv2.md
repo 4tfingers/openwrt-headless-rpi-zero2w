@@ -36,7 +36,7 @@ case "$1" in
                 else
                     /etc/init.d/tailscale start >/dev/null 2>&1
                     sleep 3
-                    /usr/sbin/tailscale up --accept-dns=false --exit-node=100.111.96.59 --exit-node-allow-lan-access=true 2>/dev/null
+                    /usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true 2>/dev/null
                 fi
                 echo '{"result":true}'
                 ;;

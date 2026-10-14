@@ -472,7 +472,7 @@ Before mapping the interactive sidebar application links, you must deploy the un
        
        echo "Bringing Tailscale interface up with custom routing..."
        # Run the up command and mute the background Go log runtime clutter
-       /usr/sbin/tailscale up --accept-dns=false --exit-node=100.111.96.59 --exit-node-allow-lan-access=true 2>/dev/null
+       /usr/sbin/tailscale up --accept-dns=false --exit-node=100.xxx.xxxx.xxxx --exit-node-allow-lan-access=true 2>/dev/null
        
        echo "Tailscale is now up and running successfully."
        

@@ -59,7 +59,7 @@ If Tailscale initializes but traffic fails to route through your exit node:
   ```bash
   pgrep tailscaled
   ```
-- [ ] **Exit Node Authentication:** Run `tailscale status` to confirm your router is cleanly authenticated to your tailnet and can see your home exit node machine (`100.111.96.59`).
+- [ ] **Exit Node Authentication:** Run `tailscale status` to confirm your router is cleanly authenticated to your tailnet and can see your home exit node machine (`100.xxx.xxx.xxx`).
 - [ ] **DNS Lock Check:** If you have internet access *until* Tailscale turns on, verify your toggle script explicitly passes `--accept-dns=false` so the local hotel captive portal dns doesn't collide with the tunnel routing table.
 
 ---

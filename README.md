@@ -90,7 +90,7 @@ The foundational breakthrough of this method relies on forcing the operating sys
 ) &
 exit 0
 ```
-6. Generate and download the custom image, then flash it to your MicroSD card.
+6. Generate and download the custom image **Factory (EXT4)**, then flash it to your MicroSD card.
 
 ---
 

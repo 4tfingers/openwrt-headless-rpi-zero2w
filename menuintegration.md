@@ -8,7 +8,7 @@ The custom approach works by having the `rpcd` daemon call the executable script
 ### 📊 5. Optional: LuCI Visual Battery Dashboard Status Check
 To view real-time battery voltage and estimated capacities directly from the LuCI web panel without terminal use:
 
-1. Build an execution script at `/usr/bin/myu_ups_status.py` with executable permissions (`chmod +x`).
+1. Build an execution script at `/usr/bin/muy_ups_status.py` with executable permissions (`chmod +x`).
 
 When triggered, it parses the binary register values and delivers a clean status window directly within the web dashboard.
 Create a tiny executable asset at `/usr/bin/muy_ups_status.py`:

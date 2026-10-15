@@ -175,21 +175,22 @@ return L.view.extend({
 ---
 
 ### Step 5: Execution Checklist (Powershell SSH)
-Paste these exact commands into your terminal to wipe any old test entries, enforce script executables, strip structural Windows carriage returns (`\r`), and rebuild the LuCI index cache:
+Paste these exact commands into your terminal to enforce script executables, strip structural Windows carriage returns (`\r`), and rebuild the LuCI index cache:
 
 ```bash
 # 1. Enforce script execution rights on the backend system binary
 chmod +x /usr/libexec/rpcd/tailscale
-#1a. run from the terminal to get a registration url
-/usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true
 
-# 2. Automatically clean hidden Windows CRLF line formatting issues 
+# 2. run from the terminal to get a registration url
+ **From trminal** `/usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true`
+
+# 3. Automatically clean hidden Windows CRLF line formatting issues 
 sed -i 's/\r$//' /usr/libexec/rpcd/tailscale
 sed -i 's/\r$//' /usr/share/rpcd/acl.d/tailscale.json
 sed -i 's/\r$//' /usr/share/luci/menu.d/luci-app-tailscale.json
 sed -i 's/\r$//' /www/luci-static/resources/view/tailscale/toggle.js
 
-# 3. Bounce the RPC daemon and flush memory caching engines
+# 4. Bounce the RPC daemon and flush memory caching engines
 /etc/init.d/rpcd restart
 rm -rf /tmp/luci-indexcache* /tmp/luci-modulecache/*
 ```

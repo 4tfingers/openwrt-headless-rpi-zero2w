@@ -180,7 +180,7 @@ Paste these exact commands into your terminal to wipe any old test entries, enfo
 chmod +x /usr/libexec/rpcd/tailscale
 
 # 2. Automatically clean hidden Windows CRLF line formatting issues 
-sed -i 's\(/\r\)\$//' /usr/libexec/rpcd/tailscale
+sed -i 's/\r//' /usr/libexec/rpcd/tailscale
 sed -i 's\(/\r\)\$//' /usr/share/rpcd/acl.d/tailscale.json
 sed -i 's\(/\r\)\$//' /usr/share/luci/menu.d/luci-app-tailscale.json
 sed -i 's\(/\r\)\$//' /www/luci-static/resources/view/tailscale/toggle.js

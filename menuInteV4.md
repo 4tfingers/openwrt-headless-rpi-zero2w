@@ -182,7 +182,7 @@ Paste these exact commands into your terminal to enforce script executables, str
 chmod +x /usr/libexec/rpcd/tailscale
 
 # 2. run from the terminal to get a registration url
- **From trminal** `/usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true`
+/usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true
 
 # 3. Automatically clean hidden Windows CRLF line formatting issues 
 sed -i 's/\r$//' /usr/libexec/rpcd/tailscale

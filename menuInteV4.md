@@ -19,7 +19,7 @@ This script handles the raw system commands. It monitors your Tailscale backgrou
 
 *   **File Location:** `/usr/libexec/rpcd/tailscale`  
 *   *Note: Do not append a `.sh` file extension, and do not use hyphens in the filename.*
-*   *Note: 'mkdir /usr/libexec/rpcd'
+*   **Note:** `mkdir /usr/libexec/rpcd`
 
 ```sh
 #!/bin/sh

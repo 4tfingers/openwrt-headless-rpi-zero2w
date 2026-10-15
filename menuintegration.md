@@ -78,7 +78,6 @@ Instead of writing a shell wrapper, your file under `/usr/libexec/rpcd/` can be 
 1. Create your new plugin script (No `.py` extension, no hyphens):
    ```bash
    nano /usr/libexec/rpcd/upsstatus
-   sed -i 's/\r$//' /usr/libexec/rpcd/upsstatus
    ```
 
 2. Paste the Python implementation that matches the `rpcd` communication layout:
@@ -118,9 +117,8 @@ Instead of writing a shell wrapper, your file under `/usr/libexec/rpcd/` can be 
    if __name__ == "__main__":
        main()
    ```
-
 ### Option B: Keep sh for rpcd and Call Python Internally
-If you prefer to stick closer to your original `tailscale_test` shell architecture, you can keep the `rpcd` interface in a standard `sh` script and use it to execute the Python file.
+If you prefer to stick closer to your original `tailscale` shell architecture, you can keep the `rpcd` interface in a standard `sh` script and use it to execute the Python file.
 
 1. Create your shell wrapper:
    ```bash

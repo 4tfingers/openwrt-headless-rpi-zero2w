@@ -178,7 +178,8 @@ Paste these exact commands into your terminal to wipe any old test entries, enfo
 ```bash
 # 1. Enforce script execution rights on the backend system binary
 chmod +x /usr/libexec/rpcd/tailscale
-
+#1a. run from the terminal to get a registration url
+/usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true
 # 2. Automatically clean hidden Windows CRLF line formatting issues 
 sed -i 's/\r//' /usr/libexec/rpcd/tailscale
 sed -i 's\(/\r\)\$//' /usr/share/rpcd/acl.d/tailscale.json

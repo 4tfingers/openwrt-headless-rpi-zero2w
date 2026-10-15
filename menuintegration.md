@@ -8,13 +8,13 @@ The custom approach works by having the `rpcd` daemon call the executable script
 ### 📊 5. Optional: LuCI Visual Battery Dashboard Status Check
 To view real-time battery voltage and estimated capacities directly from the LuCI web panel without terminal use:
 
-1. Build an execution script at `/etc/ups_status.py` with executable permissions (`chmod +x`).
+1. Build an execution script at `/usr/bin/myu_ups_status.py` with executable permissions (`chmod +x`).
 2. Map the script inside the web framework: **System ➔ Custom Commands ➔ Add**:
    * **Description:** Check UPS Battery Status
-   * **Command:** `/etc/ups_status.py`
+   * **Command:**  `/usr/bin/muy_ups_status.py`
 
 When triggered, it parses the binary register values and delivers a clean status window directly within the web dashboard.
-Create a tiny executable asset at `/etc/ups_status.py`:
+Create a tiny executable asset at `/usr/bin/muy_ups_status.py`:
 
 ```bash
 nano /etc/ups_status.py
@@ -68,8 +68,9 @@ else:
 
 Make the script executable:
 ```bash
-chmod +x /etc/ups_status.py
+chmod +x /usr/bin/muy_ups_status.py
 ```
+
 ## Step 1: Implementation Paths
 
 Because the UPS script is written in Python, there are two clean paths to implement this.

@@ -297,8 +297,9 @@ dtoverlay=i2c-rtc,ds1307
 To keep the RAM footprint minimal on the Pi's 512MB stack, install the stripped-down, bare-bones version of Python and its SMBus bindings:
 
 ```bash
-opkg update
-opkg install kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus
+apt update
+apk add kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus
+outdated code: opkg update && opkg install kmod-i2c-bcm2835 i2c-tools python3-light python3-smbus
 ```
 ---
 Verify that the kernel successfully maps the Waveshare hardware chip by scanning the active bus:

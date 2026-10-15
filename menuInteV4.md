@@ -108,7 +108,8 @@ This maps your file right into the navigation tree underneath the primary Servic
 This file utilizes OpenWrt's native client-side framework library (`L.rpc` and `E()`) to render your status badge, dynamically color-code connection states, and update your toggle button in real-time.
 
 *   **File Location:** `/www/luci-static/resources/view/tailscale/toggle.js`
-
+*   **Create Folder:** `mkdir /www/luci-static/resources/view/tailscale`
+  
 ```javascript
 'use strict';
 

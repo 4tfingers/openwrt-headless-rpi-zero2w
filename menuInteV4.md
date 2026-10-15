@@ -12,6 +12,7 @@ By utilizing OpenWrt's modern **RPCD (Routing Policy Control Daemon)** and JavaS
 ---
 
 ## 🛠️ Step-by-Step Implementation
+## Note: this working but needs editing to be precise like some folders need creation if not existing and the tailscale node needs bringing up to register it
 
 ### Step 1: Deploy the Production Backend Script
 This script handles the raw system commands. It monitors your Tailscale background process via `pgrep`, checks status vectors via Tailscale's JSON engine, and safely triggers up/down routing changes.

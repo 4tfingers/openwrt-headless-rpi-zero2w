@@ -18,7 +18,7 @@ Before inserting the SD card into the Pi, verify these configurations are in pla
 ---
 
 ## 🐧 Phase 2: File System & Permissions (SSH Phase)
-If you can connect to the router via Wi-Fi/SSH but scripts fail to run, run these checks:
+If you can connect to the router via Wi-Fi/SSH but scripts fail to run, run these checks need edit for menu items updates:
 
 - [ ] **Script Execution Flags:** Confirm all custom assets have execution permissions. Fix them by running:
   ```bash
@@ -28,7 +28,7 @@ If you can connect to the router via Wi-Fi/SSH but scripts fail to run, run thes
   ```
 - [ ] **Package Dependencies Installed:** Verify Python and I2C tools are present by running:
   ```bash
-  opkg list-installed | grep -E "python3-light|python3-smbus|i2c-tools"
+  apk info | grep -E "python3-light|python3-smbus|i2c-tools"
   ```
   - [ ] **Non-Interactive Scheduling:** Confirm that your cron additions were applied using an automated string rather than an interactive utility. If the shell layout breaks line alignment during configuration updates, immediately drop the session fix: `reset` or `stty sane`, then verify the files via `cat /etc/crontabs/root`.
 

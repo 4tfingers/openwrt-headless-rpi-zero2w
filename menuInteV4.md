@@ -19,6 +19,7 @@ This script handles the raw system commands. It monitors your Tailscale backgrou
 
 *   **File Location:** `/usr/libexec/rpcd/tailscale`  
 *   *Note: Do not append a `.sh` file extension, and do not use hyphens in the filename.*
+*   *Note: 'mkdir /usr/libexec/rpcd'
 
 ```sh
 #!/bin/sh
@@ -180,11 +181,12 @@ Paste these exact commands into your terminal to wipe any old test entries, enfo
 chmod +x /usr/libexec/rpcd/tailscale
 #1a. run from the terminal to get a registration url
 /usr/sbin/tailscale up --accept-dns=false --exit-node=YOUR-HOME-EXIT-NODE-IP --exit-node-allow-lan-access=true
+
 # 2. Automatically clean hidden Windows CRLF line formatting issues 
-sed -i 's/\r//' /usr/libexec/rpcd/tailscale
-sed -i 's\(/\r\)\$//' /usr/share/rpcd/acl.d/tailscale.json
-sed -i 's\(/\r\)\$//' /usr/share/luci/menu.d/luci-app-tailscale.json
-sed -i 's\(/\r\)\$//' /www/luci-static/resources/view/tailscale/toggle.js
+sed -i 's/\r$//' /usr/libexec/rpcd/tailscale
+sed -i 's/\r$//' /usr/share/rpcd/acl.d/tailscale.json
+sed -i 's/\r$//' /usr/share/luci/menu.d/luci-app-tailscale.json
+sed -i 's/\r$//' /www/luci-static/resources/view/tailscale/toggle.js
 
 # 3. Bounce the RPC daemon and flush memory caching engines
 /etc/init.d/rpcd restart

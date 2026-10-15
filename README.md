@@ -364,6 +364,11 @@ Make the script executable:
 chmod +x /etc/ups_monitor.py
 ```
 
+Clear out any CR 
+```bash
+sed -i 's/\r$//' /etc/ups_monitor.py
+```
+
 ### ⏱️ 4. Automate the Scan via Cron Tasks
 Instead of running a persistent background engine thread that consumes memory, delegate execution to the native lightweight cron scheduler to check the status once every minute or longer.
 From the Terminal...

@@ -3,21 +3,18 @@
 The custom approach works by having the `rpcd` daemon call the executable script:
 * **List:** When running `list`, the script tells `ubus` what methods are available.
 * **Call:** When running `call`, it passes data to the backend.
-
+* **Description:** Check UPS Battery Status
 ---
 ### 📊 5. Optional: LuCI Visual Battery Dashboard Status Check
 To view real-time battery voltage and estimated capacities directly from the LuCI web panel without terminal use:
 
 1. Build an execution script at `/usr/bin/myu_ups_status.py` with executable permissions (`chmod +x`).
-2. Map the script inside the web framework: **System ➔ Custom Commands ➔ Add**:
-   * **Description:** Check UPS Battery Status
-   * **Command:**  `/usr/bin/muy_ups_status.py`
 
 When triggered, it parses the binary register values and delivers a clean status window directly within the web dashboard.
 Create a tiny executable asset at `/usr/bin/muy_ups_status.py`:
 
 ```bash
-nano /etc/ups_status.py
+nano /usr/bin/muy_ups_status.py
 ```
 
 ```python
@@ -128,7 +125,6 @@ If you prefer to stick closer to your original `tailscale_test` shell architectu
 1. Create your shell wrapper:
    ```bash
    nano /usr/libexec/rpcd/upsstatus
-   sed -i 's/\r$//' /usr/libexec/rpcd/upsstatus
    ```
 
 2. Paste the standard `sh` framework matching your previous setup, executing Python under the `call` case:
@@ -226,7 +222,6 @@ Next, create the frontend JavaScript view that talks directly to your `upsstatus
    ```bash
    mkdir -p /www/luci-static/resources/view/services
    nano /www/luci-static/resources/view/services/ups.js
-   sed -i 's\(/\r\)\$//' /www/luci-static/resources/view/services/ups.js
    ```
 
 2. Paste the following modern ES6 LuCI view script:
@@ -276,15 +271,6 @@ Next, create the frontend JavaScript view that talks directly to your `upsstatus
 ## Step 4: Clear Caches and Apply Everything
 
 1. **Enforce executable rights and resolve formatting:**
-   ```bash
-   chmod +x /usr/libexec/rpcd/tailscale_test
-
-   # Automatically clean any Windows CRLF formatting issues
-   sed -i 's\(/\r\)\$//' /usr/libexec/rpcd/tailscale_test
-   sed -i 's\(/\r\)\$//' /usr/share/rpcd/acl.d/tailscale_test.json
-   sed -i 's\(/\r\)\$//' /usr/share/luci/menu.d/luci-app-tailscale-test.json
-   sed -i 's\(/\r\)\$//' /www/luci-static/resources/view/tailscale/toggle_test.js
-   ```
 
 2. **Reload core services:**  
    For OpenWRT to process the updated menu schemas and pick up the new JavaScript paths, reload the core services:
